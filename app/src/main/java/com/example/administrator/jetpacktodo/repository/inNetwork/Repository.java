@@ -7,6 +7,7 @@ import android.arch.paging.LivePagedListBuilder;
 import android.arch.paging.PagedList;
 
 import com.example.administrator.jetpacktodo.model.Student;
+import com.example.administrator.jetpacktodo.repository.BaseRepository;
 import com.example.administrator.jetpacktodo.repository.Listing;
 import com.example.administrator.jetpacktodo.repository.inNetwork.CustomPageDataSourceFactor;
 import com.example.administrator.jetpacktodo.repository.inNetwork.MyDataSource;
@@ -14,11 +15,17 @@ import com.example.administrator.jetpacktodo.repository.inNetwork.MyDataSource;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-public class Repository {
+public class Repository extends BaseRepository {
+    private int pageSize;
+
+    public Repository(int pageSize) {
+        this.pageSize = pageSize;
+    }
+
     public Listing<Student> getData() {
         PagedList.Config mConfig = new PagedList.Config.Builder()
-                .setPageSize(10)
-                .setInitialLoadSizeHint(20)
+                .setPageSize(pageSize)
+                .setInitialLoadSizeHint(pageSize)
                 .setEnablePlaceholders(false)
                 .build();
 
@@ -40,7 +47,7 @@ public class Repository {
         return new Listing<Student>() {
             @Override
             public void refresh() {
-                if(sourceFactor.sourceLiveData.getValue()!=null){
+                if (sourceFactor.sourceLiveData.getValue() != null) {
                     sourceFactor.sourceLiveData.getValue().invalidate();
                 }
             }

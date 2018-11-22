@@ -1,9 +1,12 @@
 package com.example.administrator.jetpacktodo.activity;
 
 import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModel;
+import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.arch.paging.PagedList;
 import android.databinding.DataBindingUtil;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -13,15 +16,17 @@ import android.util.Log;
 import com.example.administrator.jetpacktodo.adapter.CustomeAdapter;
 import com.example.administrator.jetpacktodo.adapter.DiffCallBack;
 import com.example.administrator.jetpacktodo.adapter.RefreshStatus;
+import com.example.administrator.jetpacktodo.repository.BaseRepository;
+import com.example.administrator.jetpacktodo.repository.ServiceLocator;
 import com.example.administrator.jetpacktodo.viewmodel.MainViewModel;
 import com.example.administrator.jetpacktodo.R;
 import com.example.administrator.jetpacktodo.model.Student;
 import com.example.administrator.jetpacktodo.databinding.ActivityMainBinding;
 
 
-
 public class MainActivity extends AppCompatActivity {
 
+    public static final String INTENT_KEY = "intent_type";
     private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
@@ -32,7 +37,15 @@ public class MainActivity extends AppCompatActivity {
 
 
         final MainViewModel viewModel = ViewModelProviders
-                .of(this).get(MainViewModel.class);
+                .of(this, new ViewModelProvider.Factory() {
+                    @NonNull
+                    @Override
+                    public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
+                        String type = getIntent().getStringExtra(INTENT_KEY);
+                        BaseRepository repository = ServiceLocator.getRepository(MainActivity.this, type);
+                        return (T) new MainViewModel(repository);
+                    }
+                }).get(MainViewModel.class);
         final CustomeAdapter customeAdapter = new CustomeAdapter(new DiffCallBack());
         viewDataBinding.setAdapter(customeAdapter);
 
@@ -41,7 +54,6 @@ public class MainActivity extends AppCompatActivity {
         viewModel.listLiveData.observe(this, new Observer<PagedList<Student>>() {
             @Override
             public void onChanged(@Nullable PagedList<Student> students) {
-                Log.d("zzzr", students.size() + "");
                 customeAdapter.submitList(students);
             }
         });

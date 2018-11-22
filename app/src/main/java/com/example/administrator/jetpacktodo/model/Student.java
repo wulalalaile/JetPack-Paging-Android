@@ -1,7 +1,11 @@
 package com.example.administrator.jetpacktodo.model;
 
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
+
 import java.io.Serializable;
 
+@Entity(tableName = "student_table")
 public class Student implements Serializable {
 
     /**
@@ -14,8 +18,9 @@ public class Student implements Serializable {
      * publishedAt : 2018-10-22T17:00:00Z
      * content : You can hate getting scared and still want to watch scary movies. Im a little crying baby, but I didnt let that stop me from enjoying The Babadook, or enjoying and then hating 10 Cloverfield Lane. My strategy for both was simple: watch on the couch with a fri… [+2371 chars]
      */
+    @PrimaryKey(autoGenerate = true)
+    private int id;
 
-    private SourceBean source;
     private String author;
     private String title;
     private String description;
@@ -24,13 +29,16 @@ public class Student implements Serializable {
     private String publishedAt;
     private String content;
 
-    public SourceBean getSource() {
-        return source;
+    public int getIndexInReponse() {
+        return indexInReponse;
     }
 
-    public void setSource(SourceBean source) {
-        this.source = source;
+    public void setIndexInReponse(int indexInReponse) {
+        this.indexInReponse = indexInReponse;
     }
+
+    private int indexInReponse = -1;
+
 
     public String getAuthor() {
         return author;
@@ -88,29 +96,18 @@ public class Student implements Serializable {
         this.content = content;
     }
 
-    public static class SourceBean {
-        /**
-         * id : null
-         * name : Lifehacker.com
-         */
+    public int getId() {
+        return id;
+    }
 
-        private Object id;
-        private String name;
+    public void setId(int id) {
+        this.id = id;
+    }
 
-        public Object getId() {
-            return id;
-        }
-
-        public void setId(Object id) {
-            this.id = id;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
+    @Override
+    public String toString() {
+        return "Student{" +
+                "id=" + id +
+                '}';
     }
 }

@@ -32,7 +32,6 @@ public class MyDataSource extends PageKeyedDataSource<Integer, Student> {
 
     @Override
     public void loadInitial(@NonNull LoadInitialParams<Integer> params, @NonNull final LoadInitialCallback<Integer, Student> callback) {
-        Log.d("zzzr", "loadInitial");
         refreshStatus.postValue(RefreshStatus.RE_STATUS_LOADING);
         DataService dataService = AppServerRetrofit.getInstance()
                 .create(DataService.class);

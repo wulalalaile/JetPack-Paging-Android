@@ -9,11 +9,11 @@ import android.arch.paging.PagedList;
 import android.util.Log;
 
 import com.example.administrator.jetpacktodo.model.Student;
+import com.example.administrator.jetpacktodo.repository.BaseRepository;
 import com.example.administrator.jetpacktodo.repository.Listing;
 import com.example.administrator.jetpacktodo.repository.inNetwork.Repository;
 
 public class MainViewModel extends ViewModel {
-    private Repository repository;
     private MutableLiveData<String> subredditName;
     private LiveData<Listing<Student>> result;
     public LiveData<PagedList<Student>> listLiveData;
@@ -21,14 +21,12 @@ public class MainViewModel extends ViewModel {
 
     public LiveData<Integer> refreshStatus;
 
-    public MainViewModel() {
+    public MainViewModel(final BaseRepository repository) {
         subredditName = new MutableLiveData<>();
-        repository = new Repository();
 
         result = Transformations.map(subredditName, new Function<String, Listing<Student>>() {
             @Override
             public Listing<Student> apply(String input) {
-                Log.d("zzr","resule");
                 return repository.getData();
             }
         });

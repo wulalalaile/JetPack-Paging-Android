@@ -36,10 +36,6 @@ public class BindingAdapter {
         });
     }
 
-    @android.databinding.BindingAdapter(value = "setRefreshIng")
-    public static void setRefreshIng(SwipeRefreshLayout view, ObservableField<Boolean> data) {
-        view.setRefreshing(data.get());
-    }
 
 
 }
