@@ -34,14 +34,6 @@ public class CustomeAdapter extends PagedListAdapter<Student, CustomeAdapter.Vie
         return new ViewHolder(viewDataBinding);
     }
 
-    @Override
-    public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i, List<Object> payloads) {
-        if(!payloads.isEmpty()){
-            Log.d("zzr","onBindViwHolder");
-        }else {
-            onBindViewHolder(viewHolder,i);
-        }
-    }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {

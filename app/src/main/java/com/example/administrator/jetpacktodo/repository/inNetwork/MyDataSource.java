@@ -2,6 +2,7 @@ package com.example.administrator.jetpacktodo.repository.inNetwork;
 
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.paging.PageKeyedDataSource;
+import android.databinding.ObservableBoolean;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -25,14 +26,18 @@ public class MyDataSource extends PageKeyedDataSource<Integer, Student> {
 
     public MutableLiveData<Integer> refreshStatus;
 
+    private ObservableBoolean observableBoolean;
 
-    public MyDataSource() {
+
+    public MyDataSource(ObservableBoolean observableBoolean) {
         this.refreshStatus = new MutableLiveData<Integer>();
+        this.observableBoolean = observableBoolean;
     }
 
     @Override
     public void loadInitial(@NonNull LoadInitialParams<Integer> params, @NonNull final LoadInitialCallback<Integer, Student> callback) {
         refreshStatus.postValue(RefreshStatus.RE_STATUS_LOADING);
+        observableBoolean.set(true);
         DataService dataService = AppServerRetrofit.getInstance()
                 .create(DataService.class);
         Call<HttpResponseBody<List<Student>>> call
@@ -44,8 +49,10 @@ public class MyDataSource extends PageKeyedDataSource<Integer, Student> {
                 callback.onResult(listHttpResponseBody.articles, 0, 1);
             }
             refreshStatus.postValue(RefreshStatus.RE_STATUS_LOADED);
+            observableBoolean.set(false);
         } catch (IOException e) {
             e.printStackTrace();
+            observableBoolean.set(false);
         }
 
 

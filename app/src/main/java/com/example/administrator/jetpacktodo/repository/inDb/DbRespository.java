@@ -9,6 +9,8 @@ import android.arch.paging.DataSource;
 import android.arch.paging.LivePagedListBuilder;
 import android.arch.paging.PagedList;
 import android.content.Context;
+import android.databinding.ObservableBoolean;
+import android.util.Log;
 
 import com.example.administrator.jetpacktodo.adapter.RefreshStatus;
 import com.example.administrator.jetpacktodo.model.Student;
@@ -34,6 +36,7 @@ public class DbRespository extends BaseRepository implements PageBoundaryCallBac
     private Context context;
     private int pageSize;
     private Executor executor;
+    private ObservableBoolean observableBoolean;
 
     public DbRespository(Context context, int pageSize) {
         this.context = context.getApplicationContext();
@@ -44,31 +47,23 @@ public class DbRespository extends BaseRepository implements PageBoundaryCallBac
 
     }
 
-    public Listing<Student> getData() {
+    public Listing<Student> getData(ObservableBoolean observableBoolean) {
+        this.observableBoolean = observableBoolean;
         final PageBoundaryCallBack callBack = new PageBoundaryCallBack(executor, pageSize, this);
         DataSource.Factory<Integer, Student> factory = database.studentDao().getDataSourceFactory();
         PagedList.Config mConfig = new PagedList.Config.Builder()
                 .setPageSize(pageSize)
-                .setPrefetchDistance(pageSize)
                 .setEnablePlaceholders(true)
                 .build();
         final LiveData<PagedList<Student>> listLiveData = new LivePagedListBuilder(factory, mConfig)
                 .setBoundaryCallback(callBack)
                 .build();
 
-        final MutableLiveData<String> trigger = new MutableLiveData<>();
 
-        final LiveData<Integer> refreshStatus = Transformations
-                .switchMap(trigger, new Function<String, LiveData<Integer>>() {
-                    @Override
-                    public LiveData<Integer> apply(String input) {
-                        return refresh();
-                    }
-                });
         return new Listing<Student>() {
             @Override
             public void refresh() {
-                trigger.setValue("");
+                refreshData();
             }
 
             @Override
@@ -76,10 +71,6 @@ public class DbRespository extends BaseRepository implements PageBoundaryCallBac
                 return listLiveData;
             }
 
-            @Override
-            public LiveData<Integer> getRefreshStatus() {
-                return refreshStatus;
-            }
         };
     }
 
@@ -93,8 +84,9 @@ public class DbRespository extends BaseRepository implements PageBoundaryCallBac
         });
     }
 
-    private LiveData<Integer> refresh() {
+    private LiveData<Integer> refreshData() {
         final MutableLiveData<Integer> mutableLiveData = new MutableLiveData<>();
+        observableBoolean.set(true);
         mutableLiveData.setValue(RefreshStatus.RE_STATUS_LOADING);
         AppServerRetrofit.getInstance()
                 .create(DataService.class)
@@ -132,10 +124,12 @@ public class DbRespository extends BaseRepository implements PageBoundaryCallBac
 
                     @Override
                     public void onError(Throwable e) {
+                        observableBoolean.set(false);
                     }
 
                     @Override
                     public void onComplete() {
+                        observableBoolean.set(false);
                         mutableLiveData.postValue(RefreshStatus.RE_STATUS_LOADED);
                     }
                 });

@@ -5,6 +5,7 @@ import android.databinding.ObservableField;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 
 import com.example.administrator.jetpacktodo.adapter.RefreshStatus;
 import com.example.administrator.jetpacktodo.viewmodel.MainViewModel;
@@ -36,6 +37,10 @@ public class BindingAdapter {
         });
     }
 
-
+    @android.databinding.BindingAdapter(value = "setRefreshing")
+    public static void setRefreshIng(SwipeRefreshLayout view, boolean isRefresh) {
+        Log.d("zzr", isRefresh + "");
+        view.setRefreshing(isRefresh);
+    }
 
 }

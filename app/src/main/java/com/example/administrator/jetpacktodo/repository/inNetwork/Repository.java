@@ -5,6 +5,7 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Transformations;
 import android.arch.paging.LivePagedListBuilder;
 import android.arch.paging.PagedList;
+import android.databinding.ObservableBoolean;
 
 import com.example.administrator.jetpacktodo.model.Student;
 import com.example.administrator.jetpacktodo.repository.BaseRepository;
@@ -22,14 +23,14 @@ public class Repository extends BaseRepository {
         this.pageSize = pageSize;
     }
 
-    public Listing<Student> getData() {
+    public Listing<Student> getData(ObservableBoolean refreshStatus) {
         PagedList.Config mConfig = new PagedList.Config.Builder()
                 .setPageSize(pageSize)
-                .setInitialLoadSizeHint(pageSize)
+                .setInitialLoadSizeHint(pageSize * 3)
                 .setEnablePlaceholders(false)
                 .build();
 
-        final CustomPageDataSourceFactor sourceFactor = new CustomPageDataSourceFactor();
+        final CustomPageDataSourceFactor sourceFactor = new CustomPageDataSourceFactor(refreshStatus);
         Executor executor = Executors.newFixedThreadPool(5);
         ;
         final LiveData<PagedList<Student>> mPagedList =
@@ -37,13 +38,6 @@ public class Repository extends BaseRepository {
                         .setFetchExecutor(executor)
                         .build();
 
-        final LiveData<Integer> refreshState = Transformations
-                .switchMap(sourceFactor.sourceLiveData, new Function<MyDataSource, LiveData<Integer>>() {
-                    @Override
-                    public LiveData<Integer> apply(MyDataSource input) {
-                        return input.refreshStatus;
-                    }
-                });
         return new Listing<Student>() {
             @Override
             public void refresh() {
@@ -57,10 +51,6 @@ public class Repository extends BaseRepository {
                 return mPagedList;
             }
 
-            @Override
-            public LiveData<Integer> getRefreshStatus() {
-                return refreshState;
-            }
 
 
         };

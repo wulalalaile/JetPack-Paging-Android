@@ -58,13 +58,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        swipeRefreshLayout = findViewById(R.id.swipe_refresh);
-        viewModel.refreshStatus.observe(this, new Observer<Integer>() {
-            @Override
-            public void onChanged(@Nullable Integer integer) {
-                swipeRefreshLayout.setRefreshing(integer == RefreshStatus.RE_STATUS_LOADING);
-            }
-        });
     }
 
 

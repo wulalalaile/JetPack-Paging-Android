@@ -13,6 +13,4 @@ public interface Listing<T> {
 
     LiveData<PagedList<T>> getPagedList();
 
-    LiveData<Integer> getRefreshStatus();
-
 }
