@@ -51,6 +51,7 @@ public class CustomeAdapter extends PagedListAdapter<Student, CustomeAdapter.Vie
             this.viewDataBinding = viewDataBinding;
             int a;
             int b;
+            int d;
         }
     }
 
