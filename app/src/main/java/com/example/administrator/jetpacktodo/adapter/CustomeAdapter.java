@@ -52,6 +52,7 @@ public class CustomeAdapter extends PagedListAdapter<Student, CustomeAdapter.Vie
             int a;
             int b;
             int d;
+            int e;
         }
     }
 
